@@ -20,8 +20,10 @@ ICECAST_CONFIG_PATH = "/etc/icecast2/icecast.xml"
 ###
 
 
-def start_daemon(args, not_as_root=False):
-    subprocess.Popen(args)
+def start_process(args, daemon=False):
+    p = subprocess.Popen(args)
+    if not daemon:
+        p.communicate()
 
 
 def get_cast_object():
@@ -39,21 +41,19 @@ def get_cast_object():
 
 
 def start_ices():
-    start_daemon(["ices2", ICES_CONFIG_PATH])
+    start_process(["ices2", ICES_CONFIG_PATH], daemon=True)
 
 
 def start_icecast():
-    start_daemon(["icecast2", "-c", ICECAST_CONFIG_PATH])
+    start_process(["icecast2", "-c", ICECAST_CONFIG_PATH], daemon=True)
 
 
 def stop_all_ices():
-    with suppress(Exception):
-        subprocess.check_output("pkill ices2", shell=True)
+    start_process(["pkill", "ices2"])
 
 
 def stop_all_icecast():
-    with suppress(Exception):
-        subprocess.check_output("pkill icescast2", shell=True)
+    start_process(["pkill", "icecast2"])
 
 
 def start_chromecast():
@@ -69,22 +69,13 @@ def stop_chromecast():
     cast.quit_app()
 
 
-def volume_up():
-    cast = get_cast_object()
-    cast.volume_up()
-
-
-def volume_down():
-    cast = get_cast_object()
-    cast.volume_down()
-
-
 ###
 # Functions to bind to keys.
 ###
 
 
 def play():
+    stop()
     start_ices()
     start_chromecast()
     print("Started casting")
@@ -95,6 +86,16 @@ def stop():
     stop_chromecast()
     stop_all_ices()
     print("Stopped casting")
+
+
+def volume_up():
+    cast = get_cast_object()
+    cast.volume_up()
+
+
+def volume_down():
+    cast = get_cast_object()
+    cast.volume_down()
 
 
 ###
