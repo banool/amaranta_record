@@ -6,6 +6,7 @@ import pychromecast
 import subprocess
 
 from contextlib import suppress
+from functools import partial, update_wrapper
 from time import sleep
 
 
@@ -15,24 +16,69 @@ STREAM_FILENAME = "example1.ogg"
 ICES_CONFIG_PATH = "/etc/ices.xml"
 ICECAST_CONFIG_PATH = "/etc/icecast2/icecast.xml"
 
+DINING_ROOM = "Dining Room Speaker"
+LIVING_ROOM = "Living Room"
+COMMON_SPACE = "Common Space"
+
+ALL_SPEAKERS = [DINING_ROOM, LIVING_ROOM, COMMON_SPACE]
+
+DISPLAY_NAME = "Default Media Receiver"
+
+
 ###
 # Helpers
 ###
 
+def wrapped_partial(func, *args, **kwargs):
+    partial_func = partial(func, *args, **kwargs)
+    update_wrapper(partial_func, func)
+    return partial_func
+
 
 def start_process(args, daemon=False):
-    p = subprocess.Popen(args)
-    if not daemon:
+    kwargs = {}
+    if daemon:
+        kwargs["start_new_session"] = True
+    p = subprocess.Popen(args, **kwargs)
+    if daemon:
+        del p
+    else:
         p.communicate()
 
 
-def get_cast_object():
+def get_cast_object(speaker):
     chromecasts, browser = pychromecast.get_listed_chromecasts(
-        friendly_names=["Dining Room speaker"]
+        friendly_names=[speaker]
     )
     cast = chromecasts[0]
     cast.wait()
     return cast
+
+
+def get_active_cast_object():
+    chromecasts, browser = pychromecast.get_listed_chromecasts(
+        friendly_names=ALL_SPEAKERS[:]
+    )
+
+    active = {}
+    for cast in chromecasts:
+        cast.wait()
+        if cast.status.display_name == DISPLAY_NAME:
+            active[cast.device.friendly_name] = cast
+
+    if COMMON_SPACE in active:
+        print(f"Active speaker: {COMMON_SPACE}")
+        return active[COMMON_SPACE]
+
+    if LIVING_ROOM in active:
+        print(f"Active speaker: {LIVING_ROOM}")
+        return active[LIVING_ROOM]
+
+    if DINING_ROOM in active:
+        print(f"Active speaker: {DINING_ROOM}")
+        return active[DINING_ROOM]
+
+    return None
 
 
 ###
@@ -56,15 +102,17 @@ def stop_all_icecast():
     start_process(["pkill", "icecast2"])
 
 
-def start_chromecast():
-    cast = get_cast_object()
+def start_chromecast(speaker):
+    cast = get_cast_object(speaker)
     mc = cast.media_controller
     mc.play_media(f"http://{IP}:{PORT}/{STREAM_FILENAME}", "audio/ogg")
     mc.block_until_active()
 
 
 def stop_chromecast():
-    cast = get_cast_object()
+    cast = get_active_cast_object()
+    if cast is None:
+        return
     mc = cast.media_controller
     cast.quit_app()
 
@@ -74,10 +122,10 @@ def stop_chromecast():
 ###
 
 
-def play():
+def play(speaker):
     stop()
     start_ices()
-    start_chromecast()
+    start_chromecast(speaker)
     print("Started casting")
     # TODO: Flash LED
 
@@ -89,12 +137,16 @@ def stop():
 
 
 def volume_up():
-    cast = get_cast_object()
+    cast = get_active_cast_object()
+    if cast is None:
+        return
     cast.volume_up()
 
 
 def volume_down():
-    cast = get_cast_object()
+    cast = get_active_cast_object()
+    if cast is None:
+        return
     cast.volume_down()
 
 
@@ -104,7 +156,9 @@ def volume_down():
 
 
 BIND_MAP = {
-    "2": play,
+    "7": wrapped_partial(play, DINING_ROOM),
+    "8": wrapped_partial(play, LIVING_ROOM),
+    "9": wrapped_partial(play, COMMON_SPACE),
     "5": stop,
     "a": volume_down,
     "b": volume_up,
