@@ -6,8 +6,8 @@ import pychromecast
 import subprocess
 
 from contextlib import suppress
-from functools import partial, update_wrapper
-from time import sleep
+from functools import lru_cache, partial, update_wrapper
+from time import sleep, time
 
 
 IP = "192.168.86.35"
@@ -24,10 +24,14 @@ ALL_SPEAKERS = [DINING_ROOM, LIVING_ROOM, COMMON_SPACE]
 
 DISPLAY_NAME = "Default Media Receiver"
 
+LAST_GET_ACTIVE_CAST_OBJECT_TIME = 0
+LAST_ACTIVE_CAST_OBJECT = None
+
 
 ###
 # Helpers
 ###
+
 
 def wrapped_partial(func, *args, **kwargs):
     partial_func = partial(func, *args, **kwargs)
@@ -55,7 +59,7 @@ def get_cast_object(speaker):
     return cast
 
 
-def get_active_cast_object():
+def _get_active_cast_object():
     chromecasts, browser = pychromecast.get_listed_chromecasts(
         friendly_names=ALL_SPEAKERS[:]
     )
@@ -79,6 +83,25 @@ def get_active_cast_object():
         return active[DINING_ROOM]
 
     return None
+
+
+def get_active_cast_object():
+    global LAST_GET_ACTIVE_CAST_OBJECT_TIME
+    global LAST_ACTIVE_CAST_OBJECT
+    now = int(time())
+    if now < LAST_GET_ACTIVE_CAST_OBJECT_TIME + 5 and LAST_ACTIVE_CAST_OBJECT is not None:
+        print("Using cached cast object")
+        return LAST_ACTIVE_CAST_OBJECT
+
+    cast = _get_active_cast_object()
+
+    print("Fetched new cast object")
+
+    LAST_ACTIVE_CAST_OBJECT = cast
+    LAST_GET_ACTIVE_CAST_OBJECT_TIME = now
+
+    return cast
+
 
 
 ###
@@ -131,6 +154,7 @@ def play(speaker):
 
 
 def stop():
+    LAST_ACTIVE_CAST_OBJECT = None
     stop_chromecast()
     stop_all_ices()
     print("Stopped casting")
