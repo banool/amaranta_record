@@ -5,10 +5,7 @@ After=network-online.target
 
 [Service]
 Restart=always
-RestartSec=30
-# Restarts the script every x seconds.
-RuntimeMaxSec=600
-
+RuntimeMaxSec=600  # Restarts the script every x seconds.
 Environment=PYTHONUNBUFFERED=1
 ExecStart=/home/pi/amaranta_record/myvenv/bin/python /home/pi/amaranta_record/main.py
 

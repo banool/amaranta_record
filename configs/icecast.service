@@ -1,0 +1,12 @@
+[Unit]
+Description=Icecast
+Wants=network.target
+After=network-online.target
+
+[Service]
+Restart=always
+ExecStart=/usr/bin/icecast2 -c /etc/icecast2/icecast.xml
+User=pi
+
+[Install]
+WantedBy=multi-user.target default.target
