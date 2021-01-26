@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import argparse
 import keyboard
 import pychromecast
 import subprocess
@@ -51,9 +50,7 @@ def start_process(args, daemon=False):
 
 
 def get_cast_object(speaker):
-    chromecasts, browser = pychromecast.get_listed_chromecasts(
-        friendly_names=[speaker]
-    )
+    chromecasts, browser = pychromecast.get_listed_chromecasts(friendly_names=[speaker])
     cast = chromecasts[0]
     cast.wait()
     return cast
@@ -89,7 +86,10 @@ def get_active_cast_object():
     global LAST_GET_ACTIVE_CAST_OBJECT_TIME
     global LAST_ACTIVE_CAST_OBJECT
     now = int(time())
-    if now < LAST_GET_ACTIVE_CAST_OBJECT_TIME + 5 and LAST_ACTIVE_CAST_OBJECT is not None:
+    if (
+        now < LAST_GET_ACTIVE_CAST_OBJECT_TIME + 5
+        and LAST_ACTIVE_CAST_OBJECT is not None
+    ):
         print("Using cached cast object")
         return LAST_ACTIVE_CAST_OBJECT
 
@@ -101,7 +101,6 @@ def get_active_cast_object():
     LAST_GET_ACTIVE_CAST_OBJECT_TIME = now
 
     return cast
-
 
 
 ###
@@ -203,11 +202,6 @@ def delegator(event):
 ###
 # Main
 ###
-
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--location", default="Common Space")
-    args = parser.parse_args()
 
 
 def main():
