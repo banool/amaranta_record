@@ -1,3 +1,3 @@
 #!/bin/bash
 
-rsync --exclude .git myvenv -avz . pi@ender:~/amaranta_record/
+rsync --exclude .git --exclude myvenv -avz . pi@ender:~/amaranta_record/

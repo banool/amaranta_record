@@ -39,6 +39,9 @@ def get_local_ip():
 
 
 IP = get_local_ip()
+STREAM_URL = f"http://{IP}:{PORT}/{STREAM_FILENAME}"
+
+print(f"STREAM_URL: {STREAM_URL}")
 
 
 def wrapped_partial(func, *args, **kwargs):
@@ -136,7 +139,7 @@ def stop_all_icecast():
 def start_chromecast(speaker):
     cast = get_cast_object(speaker)
     mc = cast.media_controller
-    mc.play_media(f"http://{IP}:{PORT}/{STREAM_FILENAME}", "audio/ogg")
+    mc.play_media(STREAM_URL, "audio/ogg")
     mc.block_until_active()
 
 
