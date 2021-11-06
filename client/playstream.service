@@ -5,7 +5,7 @@ After=network-online.target
 
 [Service]
 Restart=always
-RestartSecs=30
+RestartSec=30
 ExecStart=mplayer http://192.168.86.20:9001/example1.ogg
 
 [Install]

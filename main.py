@@ -194,7 +194,7 @@ def volume_down():
 
 
 BIND_MAP = {
-    "6": wrapped_partial(play, None),
+    "4": wrapped_partial(play, None),
     "7": wrapped_partial(play, DINING_ROOM),
     "8": wrapped_partial(play, LIVING_ROOM),
     "9": wrapped_partial(play, COMMON_SPACE),
