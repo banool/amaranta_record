@@ -2,6 +2,7 @@
 
 import keyboard
 import pychromecast
+import socket
 import subprocess
 
 from contextlib import suppress
@@ -9,7 +10,6 @@ from functools import lru_cache, partial, update_wrapper
 from time import sleep, time
 
 
-IP = "192.168.86.35"
 PORT = 9001
 STREAM_FILENAME = "example1.ogg"
 ICES_CONFIG_PATH = "/etc/ices.xml"
@@ -30,6 +30,15 @@ LAST_ACTIVE_CAST_OBJECT = None
 ###
 # Helpers
 ###
+
+def get_local_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8", 80))
+    return s.getsockname()[0]
+    s.close()
+
+
+IP = get_local_ip()
 
 
 def wrapped_partial(func, *args, **kwargs):
