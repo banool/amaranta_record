@@ -159,8 +159,11 @@ def stop_chromecast():
 def play(speaker):
     stop()
     start_ices()
-    start_chromecast(speaker)
-    print("Started casting")
+    if speaker:
+        start_chromecast(speaker)
+        print(f"Started casting to {speaker}")
+    else:
+        print("Started stream but didn't ask a chromecast to subscribe")
     # TODO: Flash LED
 
 
@@ -191,6 +194,7 @@ def volume_down():
 
 
 BIND_MAP = {
+    "6": wrapped_partial(play, None),
     "7": wrapped_partial(play, DINING_ROOM),
     "8": wrapped_partial(play, LIVING_ROOM),
     "9": wrapped_partial(play, COMMON_SPACE),
