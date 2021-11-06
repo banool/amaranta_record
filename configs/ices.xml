@@ -19,10 +19,10 @@
     <stream>
         <!-- metadata used for stream listing -->
         <metadata>
-            <name>Example stream name</name>
-            <genre>Example genre</genre>
-            <description>A short description of your stream</description>
-            <url>http://mysite.org</url>
+            <name>Amaranta Record Pi</name>
+            <genre>Amaranta Genre</genre>
+            <description>Amaranta Record Player stream</description>
+            <url>https://github.com/banool/amaranta_record</url>
         </metadata>
 
         <!--    Input module.
