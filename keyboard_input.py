@@ -4,8 +4,7 @@ import keyboard
 
 from chromecast import LIVING_ROOM, ChromecastSpeaker
 from helpers import wrapped_partial
-from speaker import Speaker, SPEAKER_MANAGER
-
+from speaker import SPEAKER_MANAGER, Speaker
 
 KEYBOARD_BIND_MAP = {
     "7": wrapped_partial(SPEAKER_MANAGER.play, ChromecastSpeaker(LIVING_ROOM)),

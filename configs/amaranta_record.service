@@ -6,7 +6,8 @@ After=network-online.target
 [Service]
 Restart=always
 Environment=PYTHONUNBUFFERED=1
-ExecStart=/opt/amaranta_record/myvenv/bin/python /opt/amaranta_record/main.py
+ExecStartPre=/bin/sh -c 'until ping -c1 google.com; do sleep 1; done;'
+ExecStart=/opt/amaranta_record/myvenv/bin/python /opt/amaranta_record/main.py --input buttons
 
 [Install]
 WantedBy=multi-user.target default.target

@@ -6,7 +6,7 @@ from gpiozero import Button
 
 from chromecast import LIVING_ROOM, ChromecastSpeaker
 from helpers import wrapped_partial
-from speaker import Speaker, SPEAKER_MANAGER
+from speaker import SPEAKER_MANAGER, Speaker
 
 
 def run():
@@ -22,5 +22,5 @@ def run():
     volume_up_button.when_pressed = SPEAKER_MANAGER.volume_up
     volume_down_button.when_pressed = SPEAKER_MANAGER.volume_down
 
-    print("Listening for button presses")
+    print("Listening for button presses...")
     signal.pause()

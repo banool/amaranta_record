@@ -8,10 +8,13 @@ from keyboard_input import run as keyboard_input_run
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    args = parser.parse_args()
-    args.add_argument(
-        "--input", choices=("keyboard", "buttons"), help="Which input to use"
+    parser.add_argument(
+        "--input",
+        choices=("keyboard", "buttons"),
+        required=True,
+        help="Which input to use",
     )
+    args = parser.parse_args()
     return args
 
 

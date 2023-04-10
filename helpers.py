@@ -32,3 +32,5 @@ IP = get_local_ip()
 PORT = 9001
 STREAM_FILENAME = "recordplayer.ogg"
 STREAM_URL = f"http://{IP}:{PORT}/{STREAM_FILENAME}"
+
+print(f"Working with stream {STREAM_URL}")
