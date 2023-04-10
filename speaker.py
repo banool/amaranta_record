@@ -16,16 +16,18 @@ ICES_CONFIG_PATH = "/etc/ices.xml"
 class Speaker:
     def play(self):
         start_ices()
-        # Wait for the stream to come up.
         count = 0
-        url = f"http://127.0.0.1:{PORT}/{STREAM_FILENAME}.m3u"
-        while count < 50:
-            resp = requests.get(url)
-            if resp.ok:
+        # https://stackoverflow.com/a/32659310/3846032
+        url = f"http://127.0.0.1:{PORT}/status-json.xsl"
+        print("Waiting for stream to come up...")
+        while count < 5:
+            resp = requests.get(url, timeout=0.5)
+            if resp.json()["icestats"].get("source"):
+                print("Stream came up!")
                 return
-            time.sleep(0.1)
+            time.sleep(0.5)
             count += 1
-        raise RuntimeError(f"Stream failed to start at {url}")
+        raise RuntimeError(f"Stream failed to start")
 
     def stop(self):
         stop_all_ices()
@@ -57,7 +59,10 @@ class SpeakerManager:
         try:
             self.active_speaker.play()
         except Exception as e:
-            print(f"Failed to play, setting active speaker to None again: {e}")
+            print(
+                f"Failed to play, stopping and setting active speaker to None again: {e}"
+            )
+            self.active_speaker.stop()
             self.active_speaker = None
 
     def stop(self):
