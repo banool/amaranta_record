@@ -6,7 +6,7 @@ After=network-online.target
 [Service]
 Restart=always
 Environment=PYTHONUNBUFFERED=1
-ExecStart=/home/pi/amaranta_record/myvenv/bin/python /home/pi/amaranta_record/main.py
+ExecStart=/opt/amaranta_record/myvenv/bin/python /opt/amaranta_record/main.py
 
 [Install]
 WantedBy=multi-user.target default.target

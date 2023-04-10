@@ -4,6 +4,8 @@ This describes how to subscribe to the stream that we set up following the guide
 
 Essentially all we're doing here is checking if the stream is up periodically and if so, playing it.
 
+If you're running this on the same machine as the server (e.g. to then play via Bluetooth), you can change the URL in the config file to 127.0.0.1.
+
 Add playstream.service to /etc/systemd/system/playstream.service
 
 Then run this:
